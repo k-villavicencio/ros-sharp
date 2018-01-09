@@ -20,39 +20,35 @@ using UnityEngine;
 namespace RosSharp.RosBridgeClient
 {
     [RequireComponent(typeof(Camera))]
-    public class CameraImageManager : MonoBehaviour
+    public class ImageReader : MonoBehaviour
     {
-        public CameraImagePublisher CameraImagePublisher;
+        public ImagePublisher imagePublisher;
 
         public int resolutionWidth = 640;
         public int resolutionHeight = 480;
 
-        private Texture2D texture2D;
-        private RenderTexture renderTexture;
-        private Rect rect;
-
+        public Texture2D texture2D { get; private set; }
         private Camera _camera;
-
-        void Start()
+        private Rect rect;
+        private RenderTexture renderTexture;
+        
+        private void Start()
         {
             _camera = GetComponent<Camera>();
-
             texture2D = new Texture2D(resolutionWidth, resolutionHeight, TextureFormat.RGB24, false);
             rect = new Rect(0, 0, resolutionWidth, resolutionHeight);
             renderTexture = new RenderTexture(resolutionWidth, resolutionHeight, 24);
         }
 
-        void Update()
+        private void LateUpdate()
         {
-            // Render the image 
             _camera.targetTexture = renderTexture;
             _camera.Render();
             RenderTexture.active = renderTexture;
             texture2D.ReadPixels(rect, 0, 0);
             _camera.targetTexture = null;
             RenderTexture.active = null;
-
-            CameraImagePublisher.Publish(texture2D);
+            imagePublisher.Publish(texture2D);
         }
     }
 }
