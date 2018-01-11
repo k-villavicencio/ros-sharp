@@ -1,13 +1,11 @@
 ﻿/*
-© Siemens AG, 2017
+© Siemens AG, 2017-2018
 Author: Dr. Martin Bischoff (martin.bischoff@siemens.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
 <http://www.apache.org/licenses/LICENSE-2.0>.
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,23 +14,22 @@ limitations under the License.
 */
 
 using UnityEngine;
-namespace RosSharp
+using UnityEditor;
+
+namespace RosSharp.RosBridgeClient
 {
-    public class OdometryPatcher : MonoBehaviour
+    [CustomEditor(typeof(PoseWriterPatcher))]
+    public class PoseWriterPatcherEditor : Editor
     {
-        public GameObject UrdfModel;
+        private PoseWriterPatcher poseWriterPatcher;
 
-        //private static string OdometryObjectName = "base_footprint";
-
-        public void patch()
+        public override void OnInspectorGUI()
         {
-            OdometryTransformManager odometryTransformApplyer = UrdfModel.GetComponent<OdometryTransformManager>();
+            poseWriterPatcher = (PoseWriterPatcher)target;
+            DrawDefaultInspector();
 
-            if (odometryTransformApplyer != null)
-                DestroyImmediate(odometryTransformApplyer);
-
-            UrdfModel.AddComponent<OdometryTransformManager>();
-            Application.runInBackground = true;
+            if (GUILayout.Button("Apply PoseWriter to URDF Model"))
+                poseWriterPatcher.Patch();
         }
     }
 }
