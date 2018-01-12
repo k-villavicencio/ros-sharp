@@ -18,20 +18,20 @@ limitations under the License.
 using UnityEngine;
 using UnityEditor;
 
-namespace RosSharp
+namespace RosSharp.RosBridgeClient
 {
-    [CustomEditor(typeof(JointStatePatcher))]
-    public class JointStatePatcherEditor : Editor
+    [CustomEditor(typeof(JointStateWriterPatcher))]
+    public class JointStateWriterPatcherEditor : Editor
     {
-        private JointStatePatcher jointStatePatcher;
+        private JointStateWriterPatcher jointStateWriterPatcher;
 
         public override void OnInspectorGUI()
         {
-            jointStatePatcher = (JointStatePatcher)target;
+            jointStateWriterPatcher = (JointStateWriterPatcher)target;
             DrawDefaultInspector();
 
-            if (GUILayout.Button("Apply JointStateManagers"))
-                jointStatePatcher.patch();
+            if (GUILayout.Button("Add JointStateWriters to URDF Model"))
+                jointStateWriterPatcher.Patch();
 
             Application.runInBackground = true;
         }

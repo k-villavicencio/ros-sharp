@@ -19,6 +19,13 @@ namespace RosSharp
 {
     public static class TransformExtensions
     {
+        public static void Cleanup<T>(this Transform transform) where T : Component
+        {
+            T component = transform.GetComponent<T>();
+            if (component != null)
+                Object.DestroyImmediate(component);
+        }
+
         public static void SetParentAndAlign(this Transform transform, Transform parent, bool keepLocalTransform = true)
         {
             Vector3 localPosition = transform.localPosition;

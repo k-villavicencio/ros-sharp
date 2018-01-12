@@ -28,7 +28,7 @@ namespace RosSharp.RosBridgeClient
             poseWriterPatcher = (PoseWriterPatcher)target;
             DrawDefaultInspector();
 
-            if (GUILayout.Button("Apply PoseWriter to URDF Model"))
+            if (GUILayout.Button("Add PoseWriter to URDF Model"))
                 poseWriterPatcher.Patch();
         }
     }

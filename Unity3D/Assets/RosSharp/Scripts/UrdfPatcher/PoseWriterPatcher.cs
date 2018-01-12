@@ -23,15 +23,12 @@ namespace RosSharp.RosBridgeClient
 
         public void Patch()
         {
-            PoseWriter poseWriter = UrdfModel.GetComponent<PoseWriter>();
+            UrdfModel.transform.Cleanup<PoseWriter>();
 
-            if (poseWriter != null)
-                DestroyImmediate(poseWriter);
+            PoseWriter poseWriter = UrdfModel.AddComponent<PoseWriter>();
 
-            poseWriter = UrdfModel.AddComponent<PoseWriter>();
-            poseWriter.poseSubscriber = GetComponent<PoseSubscriber>();
-
-            Application.runInBackground = true;
+            PoseSubscriber poseSubscriber = GetComponent<PoseSubscriber>();
+            poseSubscriber.poseWriter = poseWriter;
         }
     }
 }

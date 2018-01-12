@@ -17,16 +17,13 @@ using UnityEngine;
 
 namespace RosSharp.RosBridgeClient
 {
-
     [RequireComponent(typeof(RosConnector))]
     public class PoseSubscriber : MonoBehaviour
     {
         public string Topic;
         public enum MessageTypes { GeometryPose, GeometryPoseWithCovariance, NavigationOdometry };
         public MessageTypes MessageType;
-
-        public Vector3 Position { get; private set; }
-        public Quaternion Rotation { get; private set; }
+        public PoseWriter poseWriter;
 
         private RosSocket rosSocket;
 
@@ -40,8 +37,7 @@ namespace RosSharp.RosBridgeClient
 
         private void Receive(Message message)
         {
-            Position = GetPosition(message);
-            Rotation = GetRotation(message);
+            poseWriter.Write(GetPosition(message), GetRotation(message));            
         }
 
         private Vector3 GetPosition(Message message)

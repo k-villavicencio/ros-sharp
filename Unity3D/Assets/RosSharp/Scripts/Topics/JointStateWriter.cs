@@ -13,24 +13,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+
 using UnityEngine;
 
 namespace RosSharp.RosBridgeClient
 {
-    [RequireComponent(typeof(MeshRenderer))]
-    public class ImageWriter : MonoBehaviour
-    {       
-        private byte[] ImageData;
+    [RequireComponent(typeof(Joint))]
+    public class JointStateWriter : MonoBehaviour
+    {
+        public int JointId;
+        public enum JointTypes { continuous, revolute, prismatic };
+        public JointTypes JointType;
 
-        private MeshRenderer meshRenderer;
-        private Texture2D texture2D;
-
-        private bool doUpdate;
+        private Joint joint;
         
+        private float newState; // deg or m
+        private float prevState; // deg or m
+        private bool doUpdate;
+
         private void Start()
         {
-            texture2D = new Texture2D(1, 1);
-            meshRenderer = GetComponent<MeshRenderer>();
+            joint = GetComponent<Joint>(); 
         }
 
         private void Update()
@@ -39,19 +42,25 @@ namespace RosSharp.RosBridgeClient
             {
                 WriteUpdate();
                 doUpdate = false;
-            }            
+            }
         }
         private void WriteUpdate()
         {
-            texture2D.LoadImage(ImageData);
-            meshRenderer.material.mainTexture = texture2D;
+            Vector3 anchor = transform.TransformPoint(joint.anchor);
+            Vector3 axis = transform.TransformDirection(joint.axis);
+
+            if (JointType == JointTypes.continuous || JointType == JointTypes.revolute)
+                transform.RotateAround(anchor, axis, (prevState - newState) * Mathf.Rad2Deg);
+            else if (JointType == JointTypes.prismatic)
+                transform.Translate(axis * (prevState - newState));
+
+            prevState = newState;
         }
 
-        public void Write(byte[] imageData)
+        public void Write(float state)
         {
-            ImageData = imageData;
+            newState = state ;
             doUpdate = true;
         }
     }
 }
-

@@ -17,23 +17,25 @@ using UnityEngine;
 
 namespace RosSharp.RosBridgeClient
 {
-    [RequireComponent(typeof(RosConnector))]
-    public class ImageSubscriber : MonoBehaviour
+    [RequireComponent(typeof(RosSocket))]
+    public class JointStateSubscriber : MonoBehaviour
     {
-        public ImageWriter imageWriter;
-        public string Topic = "/image_raw";
-        private RosSocket rosSocket;  
+        public JointStateWriter[] JointStateWriters;
 
-        private void Start()
+        private RosSocket rosSocket;
+
+        public void Start()
         {
             rosSocket = GetComponent<RosConnector>().RosSocket;
-            rosSocket.Subscribe(Topic, "sensor_msgs/CompressedImage", Receive);
+            rosSocket.Subscribe("/joint_states", "sensor_msgs/JointState", Receive);
         }
 
         private void Receive(Message message)
         {
-            imageWriter.Write( ((SensorCompressedImage)message).data);
-            
+            SensorJointStates sensorJointStates = (SensorJointStates)message;
+
+            for (int i = 0; i < JointStateWriters.Length; i++)
+                JointStateWriters[i].Write(sensorJointStates.position[i]);
         }
     }
 }

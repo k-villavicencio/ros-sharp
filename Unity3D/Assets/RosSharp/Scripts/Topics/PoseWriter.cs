@@ -21,12 +21,27 @@ namespace RosSharp.RosBridgeClient
         public PoseSubscriber poseSubscriber;
         private Vector3 position;
         private Quaternion rotation;
-        
+
+        private bool doUpdate;
+
         private void Update()
         {
-            transform.position = poseSubscriber.Position.Ros2Unity();
-            transform.rotation = poseSubscriber.Rotation.Ros2Unity();
+            if (doUpdate)
+            {
+                WriteUpdate();
+                doUpdate = false;
+            }
         }
 
+        private void WriteUpdate()
+        {
+            transform.position = position;
+            transform.rotation = rotation;
+        }
+        public void Write(Vector3 _position, Quaternion _rotation)
+        {
+            position = _position.Ros2Unity();
+            rotation = _rotation.Ros2Unity();
+        }
     }
 }
