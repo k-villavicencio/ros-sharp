@@ -134,15 +134,15 @@ namespace RosSharp.RosBridgeClient
 
         private void receiveResourceFile(ServiceReceiver serviceReceiver, object serviceResponse)
         {
-            string fileContents = System.Text.Encoding.UTF8.GetString(((ParamValueByte)serviceResponse).value);
+            byte[] fileContents = ((ParamValueByte)serviceResponse).value;
             Uri resourceFileUri = new Uri(((ParamName)serviceReceiver.ServiceParameter).name);
 
             if (isColladaFile(resourceFileUri))
             {
-                Thread importResourceFilesThread = new Thread(() => importDaeTextureFiles(resourceFileUri, fileContents));
+                Thread importResourceFilesThread = new Thread(() => importDaeTextureFiles(resourceFileUri, System.Text.Encoding.UTF8.GetString(fileContents)));
                 importResourceFilesThread.Start();
             }
-            Thread writeTextFileThread = new Thread(() => writeTextFile((string)serviceReceiver.HandlerParameter, fileContents));
+            Thread writeTextFileThread = new Thread(() => writeBinaryResponseToFile((string)serviceReceiver.HandlerParameter, fileContents));
             writeTextFileThread.Start();
 
             updateFileRequestStatus(resourceFileUri);
@@ -181,14 +181,14 @@ namespace RosSharp.RosBridgeClient
         private void writeBinaryResponseToFile(string relativeLocalFilename, byte[] fileContents)
         {
             string filename = LocalDirectory + relativeLocalFilename;
-            System.IO.Directory.CreateDirectory(Path.GetDirectoryName(filename));
+            Directory.CreateDirectory(Path.GetDirectoryName(filename));
             File.WriteAllBytes(filename, fileContents);
         }
 
         private void writeTextFile(string relativeLocalFilename, string fileContents)
         {
             string filename = LocalDirectory + relativeLocalFilename;
-            System.IO.Directory.CreateDirectory(Path.GetDirectoryName(filename));
+            Directory.CreateDirectory(Path.GetDirectoryName(filename));
             File.WriteAllText(filename, fileContents);
         }
 
