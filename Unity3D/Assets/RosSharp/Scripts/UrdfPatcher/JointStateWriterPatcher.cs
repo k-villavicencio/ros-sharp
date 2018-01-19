@@ -35,7 +35,7 @@ namespace RosSharp.RosBridgeClient
             
             foreach (Transform child in UrdfModel.GetComponentsInChildren<Transform>())
             {
-                child.Cleanup<JointStateWriter>();
+                child.DestroyImmediateIfExists<JointStateWriter>();
 
                 if (isPatchable(child, out jointType))
                 {

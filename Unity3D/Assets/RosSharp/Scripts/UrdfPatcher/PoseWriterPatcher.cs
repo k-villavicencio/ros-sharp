@@ -23,7 +23,7 @@ namespace RosSharp.RosBridgeClient
 
         public void Patch()
         {
-            UrdfModel.transform.Cleanup<PoseWriter>();
+            UrdfModel.transform.DestroyImmediateIfExists<PoseWriter>();
 
             PoseWriter poseWriter = UrdfModel.AddComponent<PoseWriter>();
 
