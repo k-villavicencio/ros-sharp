@@ -1,13 +1,11 @@
 ﻿/*
-© Siemens AG, 2017
+© Siemens AG, 2017-2018
 Author: Dr. Martin Bischoff (martin.bischoff@siemens.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
 <http://www.apache.org/licenses/LICENSE-2.0>.
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,6 +43,20 @@ namespace RosSharp.RosBridgeClient
             data = "";
         }
     }
+
+    public class GeometryAccel : Message
+    {
+        [JsonIgnore]
+        public const string type = "geometry_msgs/Accel";
+        public GeometryVector3 linear;
+        public GeometryVector3 angular;
+        public GeometryAccel()
+        {
+            linear = new GeometryVector3();
+            angular = new GeometryVector3();
+        }
+    }
+
     public class SensorJointStates : Message
     {
         [JsonIgnore]
@@ -77,6 +89,22 @@ namespace RosSharp.RosBridgeClient
             z = 0f;
         }
     }
+    public class SensorJoy : Message
+    {
+        [JsonIgnore]
+        public const string type = "sensor_msgs/Joy";
+        public StandardHeader header;
+        public float[] axes;
+        public int[] buttons;
+
+        public SensorJoy()
+        {
+            header = new StandardHeader();
+            axes = new float[0];
+            buttons = new int[0];
+        }
+    }
+
     public class NavigationOdometry : Message
     {
         [JsonIgnore]
@@ -107,6 +135,7 @@ namespace RosSharp.RosBridgeClient
             frame_id = "";
         }
     }
+
     public class GeometryPoseWithCovariance : Message
     {
         [JsonIgnore]
@@ -144,6 +173,20 @@ namespace RosSharp.RosBridgeClient
             orientation = new GeometryQuaternion();
         }
     }
+    
+    public class GeometryPoseStamped : Message
+    {
+        [JsonIgnore]
+        public const string type = "geometry_msgs/PoseStamped";
+        public StandardHeader header;
+        public GeometryPose pose;
+        public GeometryPoseStamped()
+        {
+            header = new StandardHeader();
+            pose = new GeometryPose();
+        }
+    }
+
     public class GeometryPoint : Message
     {
         [JsonIgnore]
