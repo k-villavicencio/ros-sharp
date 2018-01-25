@@ -1,4 +1,5 @@
-﻿using System;
+﻿/*
+using System;
 
 namespace RosSharp.RosBridgeClient
 {
@@ -38,3 +39,4 @@ namespace RosSharp.RosBridgeClient
         }
     }
 }
+*/

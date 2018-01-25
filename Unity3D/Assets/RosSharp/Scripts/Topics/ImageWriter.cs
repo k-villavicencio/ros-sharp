@@ -44,7 +44,8 @@ namespace RosSharp.RosBridgeClient
         private void WriteUpdate()
         {
             texture2D.LoadImage(ImageData);
-            meshRenderer.material.mainTexture = texture2D;
+            texture2D.Apply();
+            meshRenderer.material.SetTexture("_MainTex",texture2D);           
         }
 
         public void Write(byte[] imageData)

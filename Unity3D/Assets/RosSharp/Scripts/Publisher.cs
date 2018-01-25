@@ -19,37 +19,55 @@ using UnityEngine;
 
 namespace RosSharp.RosBridgeClient
 {
-    public class PublicationTimer : MonoBehaviour
+    public class Publisher : MonoBehaviour
     {
+        public string Topic = "/image_raw/compressed";
+        public string Type = "sensor_msgs/CompressedImage";
+
+        public MessageProvider MessageProvider;
+
         public event EventHandler PublicationEvent;
+
         public enum Timings { UnityFrameTime, UnityFixedTime, ClockTime }
         public Timings Timing;
 
-        public int StepLength;
+        public int SkipFrames;
+        public float Timestep;
+        private int timestep { get { return (int)(Mathf.Round(Timestep * 1000)); } }
+        private int skipFrames { get { return SkipFrames + 1; } }
 
         private Thread waitForNextStep;
-        
+
+        private RosSocket rosSocket;
+        private int publicationId;
+
         private int stepsSincePublication;
         private bool isApplicationRunning;
-
-        public static PublicationTimer AddComponent(GameObject _gameObject, EventHandler publicationEventHandler, Timings timing = Timings.UnityFrameTime, int StepLength=1)
-        {
-            PublicationTimer publicationTimer = _gameObject.AddComponent<PublicationTimer>();
-            publicationTimer.PublicationEvent += publicationEventHandler;
-            publicationTimer.Timing = timing;
-            publicationTimer.StepLength = StepLength;
-            return publicationTimer;
-        }
 
         private void Awake()
         {
             isApplicationRunning = true;
-
         }
         private void Start()
         {
             if (Timing == Timings.ClockTime)
                 ClockTimeStep();
+
+            rosSocket = GetComponent<RosConnector>().RosSocket;
+            publicationId = rosSocket.Advertize(Topic, MessageProvider.MessageType);
+            PublicationEvent += ReadMessage;
+        }
+
+        private void ReadMessage(object sender, EventArgs e)
+        {
+            Debug.Log("check");
+            MessageProvider.OnMessageRequest(e);
+            MessageProvider.MessageReady += Publish;
+        }
+        private void Publish(object sender, MessageReadyEventArgs e)
+        {
+            MessageProvider.MessageReady -= Publish;
+            rosSocket.Publish(publicationId, e.Message);
         }
 
         private void LateUpdate()
@@ -69,7 +87,7 @@ namespace RosSharp.RosBridgeClient
         private void UpdateStep(Timings UpdateTiming)
         {
             if (Timing == UpdateTiming
-                && stepsSincePublication++ % StepLength == 0
+                && stepsSincePublication++ % skipFrames == 0
                 && PublicationEvent != null)
                 PublicationEvent(this, EventArgs.Empty);
         }
@@ -88,9 +106,8 @@ namespace RosSharp.RosBridgeClient
 
         public void WaitForNextStep()
         {
-            Thread.Sleep(StepLength*1000);
+            Thread.Sleep(timestep);
             ClockTimeStep();
         }
-
     }
 }

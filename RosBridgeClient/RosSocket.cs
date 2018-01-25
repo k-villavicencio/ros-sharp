@@ -88,7 +88,7 @@ namespace RosSharp.RosBridgeClient
             subscribers.Remove(id);
         }
 
-        public int CallService(string service, Type objectType, ServiceHandler serviceHandler,  object args = null)
+        public int CallService(string service, Type objectType, ServiceHandler serviceHandler, object args = null)
         {
             int id = generateId();
             serviceCallers.Add(id, new ServiceCaller(service, objectType, serviceHandler));
@@ -139,6 +139,7 @@ namespace RosSharp.RosBridgeClient
         private Dictionary<int, Subscriber> subscribers = new Dictionary<int, Subscriber>();
         private Dictionary<int, ServiceCaller> serviceCallers = new Dictionary<int, ServiceCaller>();
 
+        /*
         private Dictionary<string, Type> messageObjects = new Dictionary<string, Type>
         {
             { "geometry_msgs/Twist", typeof(GeometryTwist) },
@@ -159,7 +160,7 @@ namespace RosSharp.RosBridgeClient
             {"nav_msgs/MapMetaData", typeof(NavigationMapMetaData) },
             {"nav_msgs/OccupancyGrid", typeof(NavigationOccupancyGrid) },
         };
-
+        */
         private void recievedOperation(object sender, MessageEventArgs e)
         {
             JObject operation = Deserialize(e.RawData);
@@ -192,24 +193,26 @@ namespace RosSharp.RosBridgeClient
             if (!foundById)
                 serviceCaller = serviceCallers.Values.FirstOrDefault(x => x.service.Equals(serviceResponse.GetService()));
 
-           
-            JObject jObject = (JObject) serviceResponse.GetValues();
+
+            JObject jObject = (JObject)serviceResponse.GetValues();
             Type type = serviceCaller.objectType;
             if (type != null)
                 serviceCaller.serviceHandler?.Invoke(jObject.ToObject(type));
             else
                 serviceCaller.serviceHandler?.Invoke(jObject);
         }
-        
+
         private void recievedPublish(JObject publication, byte[] rawData)
         {
             Subscriber subscriber;
             bool foundById = subscribers.TryGetValue(publication.GetServiceId(), out subscriber);
-
+            /*
             if (!foundById)
                 subscriber = subscribers.Values.FirstOrDefault(x => x.topic.Equals(publication.GetTopic()));
 
+            JObject message = (JObject)publication.GetMessage();
             subscriber.messageHandler?.Invoke((Message)publication.GetMessage().ToObject(messageObjects[subscriber.type]));
+            */
         }
 
         private void sendOperation(Operation operation)

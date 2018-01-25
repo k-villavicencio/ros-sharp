@@ -22,18 +22,20 @@ namespace RosSharp.RosBridgeClient
     {
         public ImageWriter imageWriter;
         public string Topic = "/image_raw";
-        private RosSocket rosSocket;  
+        public float Timestep;
+        private RosSocket rosSocket;
+        private int timestep
+        { get { return (int)(Mathf.Round(Timestep * 1000)); } }
 
         private void Start()
         {
             rosSocket = GetComponent<RosConnector>().RosSocket;
-            rosSocket.Subscribe(Topic, "sensor_msgs/CompressedImage", Receive);
+            rosSocket.Subscribe(Topic, "sensor_msgs/CompressedImage", Receive, timestep);
         }
 
         private void Receive(Message message)
         {
-            imageWriter.Write( ((SensorCompressedImage)message).data);
-            
+            imageWriter.Write(((SensorCompressedImage)message).data);
         }
     }
 }
