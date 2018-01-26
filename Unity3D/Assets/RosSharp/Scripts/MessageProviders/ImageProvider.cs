@@ -24,70 +24,52 @@ namespace RosSharp.RosBridgeClient
     [RequireComponent(typeof(Camera))]
     public class ImageProvider : MessageProvider
     {
-        protected override Message GetMessage()
-        {
-            return message;
-        }
+        private SensorCompressedImage message;
+        public override Type MessageType { get { return (typeof(SensorCompressedImage)); } }
+
         public string FrameId = "Camera";
         public int resolutionWidth = 640;
         public int resolutionHeight = 480;
         [Range(0, 100)]
         public int qualityLevel = 50;
-
-        private bool isMessageRequested;
-
-        private SensorCompressedImage message;
+        
         private Texture2D texture2D;
-        private Camera _camera;
-        private Rect rect;
+        private Rect rect;        
         private RenderTexture renderTexture;
 
         private void Start()
         {
-            _camera = GetComponent<Camera>();
+            InitializeGameObject();
+            InitializeMessage();
+        }
+
+        private void OnPostRender()
+        {
+            if (IsMessageRequested) 
+                UpdateMessage();
+        }
+        private void InitializeGameObject()
+        {
             texture2D = new Texture2D(resolutionWidth, resolutionHeight, TextureFormat.RGB24, false);
             rect = new Rect(0, 0, resolutionWidth, resolutionHeight);
             renderTexture = new RenderTexture(resolutionWidth, resolutionHeight, 24);
-            MessageRequest += RequestMessage;
-            CreateMessage();
-            Debug.Log(message.Type);
+            GetComponent<Camera>().targetTexture = renderTexture;
         }
-
-        private void RequestMessage(object sender, EventArgs e)
-        {
-            isMessageRequested = true;
-        }
-        private void Update()
-        {
-            if (isMessageRequested)
-            {
-                Debug.Log("Reading Message in Frame: " + Time.frameCount + " at Time: " + Time.realtimeSinceStartup);
-                UpdateMessage();
-                isMessageRequested = false;
-            }
-        }
-
-        private void CreateMessage()
+        private void InitializeMessage()
         {
             message = new SensorCompressedImage();
             message.header.frame_id = FrameId;
             message.format = "jpeg";
-
         }
         private void UpdateMessage()
         {
             message.header.Update();
-            message.data = GetImage().EncodeToJPG(qualityLevel);
-            OnMessageReady(new MessageReadyEventArgs(message));
+            message.data = ReadTexture2D().EncodeToJPG(qualityLevel);
+            ReleaseMessage(new MessageReleaseEventArgs(message));
         }
-        private Texture2D GetImage()
+        private Texture2D ReadTexture2D()
         {
-            _camera.targetTexture = renderTexture;
-            _camera.Render();
-            RenderTexture.active = renderTexture;
             texture2D.ReadPixels(rect, 0, 0);
-            _camera.targetTexture = null;
-            RenderTexture.active = null;
             return texture2D;
         }
     }

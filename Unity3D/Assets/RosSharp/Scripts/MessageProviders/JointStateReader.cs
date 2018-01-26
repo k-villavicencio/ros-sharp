@@ -57,8 +57,8 @@ namespace RosSharp.RosBridgeClient
                 configurableJoint = _configurableJoint;
             }
             public float GetPosition()
-            {
-                return configurableJoint.targetPosition.x;
+            {                
+                return Vector3.Dot(configurableJoint.transform.localPosition - configurableJoint.connectedAnchor, configurableJoint.axis);
             }
             public float GetVelocity()
             {

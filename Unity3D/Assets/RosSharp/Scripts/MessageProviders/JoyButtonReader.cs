@@ -17,25 +17,13 @@ using UnityEngine;
 
 namespace RosSharp.RosBridgeClient
 {
-    [RequireComponent(typeof(RosConnector))]
-    public class ImageSubscriber : MonoBehaviour
+    public class JoyButtonReader : MonoBehaviour
     {
-        public ImageWriter imageWriter;
-        public string Topic = "/image_raw";
-        public float Timestep;
-        private RosSocket rosSocket;
-        private int timestep
-        { get { return (int)(Mathf.Round(Timestep * 1000)); } }
-
-        private void Start()
+        public string Name;
+        
+        public bool GetValue()
         {
-            rosSocket = GetComponent<RosConnector>().RosSocket;
-            rosSocket.Subscribe(Topic, "sensor_msgs/CompressedImage", Receive, timestep);
-        }
-
-        private void Receive(Message message)
-        {
-            imageWriter.Write(((SensorCompressedImage)message).data);
+            return Input.GetButton(Name);              
         }
     }
 }

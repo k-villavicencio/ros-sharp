@@ -19,14 +19,14 @@ namespace RosSharp.RosBridgeClient
 {
     [RequireComponent(typeof(MeshRenderer))]
     public class ImageWriter : MonoBehaviour
-    {       
+    {
         private byte[] ImageData;
 
         private MeshRenderer meshRenderer;
         private Texture2D texture2D;
 
         private bool doUpdate;
-        
+
         private void Start()
         {
             texture2D = new Texture2D(1, 1);
@@ -37,19 +37,20 @@ namespace RosSharp.RosBridgeClient
         {
             if (doUpdate)
             {
+                //Debug.Log(Time.realtimeSinceStartup);
                 WriteUpdate();
                 doUpdate = false;
-            }            
+            }
         }
         private void WriteUpdate()
         {
             texture2D.LoadImage(ImageData);
             texture2D.Apply();
-            meshRenderer.material.SetTexture("_MainTex",texture2D);           
+            meshRenderer.material.SetTexture("_MainTex", texture2D);
         }
 
         public void Write(byte[] imageData)
-        {
+        {            
             ImageData = imageData;
             doUpdate = true;
         }

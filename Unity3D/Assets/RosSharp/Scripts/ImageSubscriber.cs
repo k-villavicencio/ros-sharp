@@ -17,13 +17,25 @@ using UnityEngine;
 
 namespace RosSharp.RosBridgeClient
 {
-    public class PoseReader : MonoBehaviour
+    [RequireComponent(typeof(RosConnector))]
+    public class ImageSubscriber : MonoBehaviour
     {
-        public PosePublisher posePublisher;
-        
-        private void Update()
+        public ImageWriter imageWriter;
+        public string Topic = "/image_raw";
+        public float Timestep;
+        private RosSocket rosSocket;
+        private int timestep
+        { get { return (int)(Mathf.Round(Timestep * 1000)); } }
+
+        private void Start()
         {
-            posePublisher.Publish(transform.position.Unity2Ros(), transform.rotation.Unity2Ros());
+            rosSocket = GetComponent<RosConnector>().RosSocket;
+            rosSocket.Subscribe(Topic, "sensor_msgs/CompressedImage", Receive, timestep);
+        }
+
+        private void Receive(Message message)
+        {            
+            imageWriter.Write(((SensorCompressedImage)message).data);
         }
     }
 }

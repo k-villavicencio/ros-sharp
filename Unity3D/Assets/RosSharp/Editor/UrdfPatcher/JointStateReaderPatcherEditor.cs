@@ -1,11 +1,13 @@
 ﻿/*
-© Siemens AG, 2017-2018
+© Siemens AG, 2017
 Author: Dr. Martin Bischoff (martin.bischoff@siemens.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
+
 <http://www.apache.org/licenses/LICENSE-2.0>.
+
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,18 +16,24 @@ limitations under the License.
 */
 
 using UnityEngine;
+using UnityEditor;
 
 namespace RosSharp.RosBridgeClient
 {
-    public class JoyButtonReader : MonoBehaviour
+    [CustomEditor(typeof(JointStateReaderPatcher))]
+    public class JointStateReaderPatcherEditor : Editor
     {
-        public int Id;
-        public string Name;
-        public bool Value;
+        private JointStateReaderPatcher jointStateReaderPatcher;
 
-        private void Update()
+        public override void OnInspectorGUI()
         {
-            Value = Input.GetButton(Name);              
+            jointStateReaderPatcher = (JointStateReaderPatcher)target;
+            DrawDefaultInspector();
+
+            if (GUILayout.Button("Add JointStateReaders to URDF Model"))
+                jointStateReaderPatcher.Patch();
+
+            Application.runInBackground = true;
         }
     }
 }

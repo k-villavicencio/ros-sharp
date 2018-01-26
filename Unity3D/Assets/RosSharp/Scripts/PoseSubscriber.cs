@@ -29,10 +29,10 @@ namespace RosSharp.RosBridgeClient
 
         public void Start()
         {
-            string rosMessageType = MessageReflector.RosMessageType(MessageType.ToString());
-
+           // string rosMessageType = MessageReflector.MessageDictionary[System.Type.GetType(MessageType.ToString())];
+            //Debug.Log(rosMessageType);
             rosSocket = GetComponent<RosConnector>().RosSocket;            
-            rosSocket.Subscribe(Topic, rosMessageType, Receive);
+            rosSocket.Subscribe(Topic, "fixme", Receive);
         }
 
         private void Receive(Message message)

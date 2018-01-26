@@ -19,21 +19,36 @@ using UnityEngine;
 namespace RosSharp.RosBridgeClient
 {
     public abstract class MessageProvider : MonoBehaviour
-    {
-        public event EventHandler<MessageReadyEventArgs> MessageReady;
+    {       
+        public abstract Type MessageType { get; }
         public event EventHandler MessageRequest;
+        public event EventHandler<MessageReleaseEventArgs> MessageRealease;
 
-        protected abstract Message GetMessage();
-        public string MessageType { get { return GetMessage().Type; } }
-        
-        protected virtual void OnMessageReady(MessageReadyEventArgs e)
+        protected bool IsMessageRequested { get { return isMessageRequested; } }
+        private bool isMessageRequested;
+
+        private void Awake()
         {
-            EventHandler<MessageReadyEventArgs> eventHandler = MessageReady;
+            MessageRequest += OnMessageRequest;
+            MessageRealease += OnMessageRelease;
+        }
+        private void OnMessageRelease(object sender, MessageReleaseEventArgs e)
+        {
+            isMessageRequested = false;
+        }
+        private void OnMessageRequest(object sender, EventArgs e)
+        {
+            isMessageRequested = true;
+        }
+        
+        protected virtual void ReleaseMessage(MessageReleaseEventArgs e)
+        {
+            EventHandler<MessageReleaseEventArgs> eventHandler = MessageRealease;
             if (eventHandler != null)
                 eventHandler(this, e);
         }
 
-        public virtual void OnMessageRequest(EventArgs e)
+        public virtual void RequestMessage(EventArgs e)
         {
             EventHandler eventHandler = MessageRequest;
             if (eventHandler != null)
@@ -41,10 +56,10 @@ namespace RosSharp.RosBridgeClient
         }
     }
 
-    public class MessageReadyEventArgs : EventArgs
+    public class MessageReleaseEventArgs : EventArgs
     {        
         public Message Message;
-        public MessageReadyEventArgs(Message message)
+        public MessageReleaseEventArgs(Message message)
         {
             Message = message;
         }

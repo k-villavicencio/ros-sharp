@@ -13,33 +13,42 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+using System;
 using UnityEngine;
 
 namespace RosSharp.RosBridgeClient
 {
-    
-    [RequireComponent(typeof(RosConnector))]
-    public class PosePublisher : MonoBehaviour
+    public class PoseProvider : MessageProvider
     {
-        public string Topic;
+        private GeometryPoseStamped message;
+        public override Type MessageType { get { return (typeof(GeometryPoseStamped)); } }
 
-        private RosSocket rosSocket;
-        private int publicationId;
-        private GeometryPose message;
-        
+        public string FrameId;
+
         private void Start()
         {
-            rosSocket = GetComponent<RosConnector>().RosSocket;
-            publicationId = rosSocket.Advertize(Topic, "geometry_msgs/Pose");
-            message = new GeometryPose();
+            InitializeMessage();
+        }
+        private void FixedUpdate()
+        {
+            if (IsMessageRequested)
+                UpdateMessage();
         }
 
-        public void Publish(Vector3 position, Quaternion rotation)
+        private void InitializeMessage()
         {
-            message.position = GetGeometryPoint(position);
-            message.orientation = GetGeometryQuaternion(rotation);
-            rosSocket.Publish(publicationId, message);
+            message = new GeometryPoseStamped();
+            message.header = new StandardHeader();
+            message.header.frame_id = FrameId;
         }
+        private void UpdateMessage()
+        {
+            message.header.Update();
+            message.pose.position = GetGeometryPoint(transform.position.Unity2Ros());
+            message.pose.orientation = GetGeometryQuaternion(transform.rotation.Unity2Ros());
+            ReleaseMessage(new MessageReleaseEventArgs(message));
+        }
+
         private GeometryPoint GetGeometryPoint(Vector3 position)
         {
             GeometryPoint geometryPoint = new GeometryPoint();

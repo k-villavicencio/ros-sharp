@@ -14,56 +14,53 @@ limitations under the License.
 */
 
 using System;
-using UnityEngine;
 
 namespace RosSharp.RosBridgeClient
 {
-    [RequireComponent(typeof(RosConnector))]
-    public class JoyPublisher : MonoBehaviour
+    public class JoyProvider : MessageProvider
     {
-        public string Topic;
-        public string FrameId = "Unity";
-        public PublicationTimer publicationTimer;
-
-        public JoyAxisReader[] JoyAxisReaders;
-        public JoyButtonReader[] JoyButtonReaders;
-
-        private RosSocket rosSocket;
         private SensorJoy message;
-        private int publicationId;
-        private int sequenceId;       
+        public override Type MessageType { get { return (typeof(SensorJoy)); } }
+  
+        public string FrameId;     
 
+        private JoyAxisReader[] JoyAxisReaders;
+        private JoyButtonReader[] JoyButtonReaders;
+        
         private void Start()
         {
-            rosSocket = GetComponent<RosConnector>().RosSocket;
-            publicationId = rosSocket.Advertize(Topic, "sensor_msgs/Joy");
-            publicationTimer.PublicationEvent += Publish;
-            CreateMessage();
+            InitializeGameObject();
+            InitializeMessage();
         }
 
-        private void Publish(object sender, EventArgs e)
+        private void Update()
         {
-            UpdateMessage();
-            rosSocket.Publish(publicationId, message);
+            if (IsMessageRequested)
+                UpdateMessage();
+        }      
+        private void InitializeGameObject()
+        {
+            JoyAxisReaders = GetComponents<JoyAxisReader>();
+            JoyButtonReaders = GetComponents<JoyButtonReader>();            
         }
-
-        private void CreateMessage()
+        private void InitializeMessage()
         {
             message = new SensorJoy();
             message.header.frame_id = FrameId;
             message.axes = new float[JoyAxisReaders.Length];
             message.buttons = new int[JoyButtonReaders.Length];
         }
-
         private void UpdateMessage()
         {
             message.header.Update();
 
             for (int i = 0; i < JoyAxisReaders.Length; i++)
-                message.axes[i] = JoyAxisReaders[i].Value;
-
+                message.axes[i] = JoyAxisReaders[i].GetValue();
+            
             for (int i = 0; i < JoyAxisReaders.Length; i++)
-                message.buttons[i] = (JoyButtonReaders[i].Value ? 1 : 0);
+                message.buttons[i] = (JoyButtonReaders[i].GetValue() ? 1 : 0);
+
+            ReleaseMessage(new MessageReleaseEventArgs(message));
         }
     }
 }

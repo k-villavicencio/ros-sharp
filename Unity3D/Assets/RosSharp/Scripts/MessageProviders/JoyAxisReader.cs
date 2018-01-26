@@ -18,14 +18,12 @@ using UnityEngine;
 namespace RosSharp.RosBridgeClient
 {
     public class JoyAxisReader : MonoBehaviour
-    {
-        public int Id;
+    {        
         public string Name;
-        public float Value;
-
-        private void Update()
+        
+        public float GetValue()
         {
-            Value = Input.GetAxis(Name);              
+            return Input.GetAxis(Name);              
         }
     }
 }
