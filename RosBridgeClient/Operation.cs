@@ -77,7 +77,7 @@ public class Operation
         public int fragment_size; // optional
         public string compression; // optional
 
-        public Subscription(int Id, string Topic, string Type="", int Throttle_rate = 0, int Queue_length = 1, int Fragment_size = int.MaxValue, string Compression = "none") : base(Id)
+        public Subscription(int Id, string Topic, string Type, int Throttle_rate = 0, int Queue_length = 1, int Fragment_size = int.MaxValue, string Compression = "none") : base(Id)
         {
             topic = Topic;
             type = Type;

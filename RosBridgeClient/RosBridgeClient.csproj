@@ -50,9 +50,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessageTypes.cs" />
     <Compile Include="JObjectExtensions.cs" />
     <Compile Include="Message.cs" />
-    <Compile Include="MessageReflector.cs" />
     <Compile Include="PointCloud.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RosSocket.cs" />

@@ -63,7 +63,7 @@ namespace RosSharp.RosBridgeClient
         {
             Publisher publisher;
             if (publishers.TryGetValue(id, out publisher))
-                sendOperation(new Publication(id, publisher.Topic, msg));               
+                sendOperation(new Publication(id, publisher.Topic, msg));
         }
 
         public void Unadvertize(int id)
@@ -72,14 +72,29 @@ namespace RosSharp.RosBridgeClient
             publishers.Remove(id);
         }
 
-        public int Subscribe(string topic, string type, MessageHandler messageHandler, int throttle_rate = 0, int queue_length = 1, int fragment_size = int.MaxValue, string compression = "none")
-        {
-            int id = generateId();
-            subscribers.Add(id, new Subscriber(topic, type, messageHandler));
 
-            sendOperation(new Subscription(id, topic, type, throttle_rate, queue_length, fragment_size, compression));
-            
+
+        public int Subscribe(string topic, string rosMessageType, MessageHandler messageHandler, int throttle_rate = 0, int queue_length = 1, int fragment_size = int.MaxValue, string compression = "none")
+        {
+
+            Type messageType = MessageTypes.MessageType(rosMessageType);
+            if (messageType==null)
+                return 0;
+
+            int id = generateId();
+            subscribers.Add(id, new Subscriber(topic, messageType, messageHandler));
+            sendOperation(new Subscription(id, topic, rosMessageType, throttle_rate, queue_length, fragment_size, compression));
             return id;
+
+        }
+
+        public int Subscribe(string topic, Type messageType, MessageHandler messageHandler, int throttle_rate = 0, int queue_length = 1, int fragment_size = int.MaxValue, string compression = "none")
+        {
+            string rosMessageType = MessageTypes.RosMessageType(messageType);
+            if (rosMessageType == null)
+                return 0;
+
+            return Subscribe(topic, messageType, messageHandler, throttle_rate, queue_length, fragment_size, compression);
         }
 
         public void Unsubscribe(int id)
@@ -112,12 +127,12 @@ namespace RosSharp.RosBridgeClient
         internal struct Subscriber
         {
             internal string topic;
-            internal string type;
+            internal Type messageType;
             internal MessageHandler messageHandler;
-            internal Subscriber(string Topic, string Type, MessageHandler MessageHandler)
+            internal Subscriber(string Topic, Type MessageType, MessageHandler MessageHandler)
             {
                 topic = Topic;
-                type = Type;
+                messageType = MessageType;
                 messageHandler = MessageHandler;
             }
         }
@@ -139,28 +154,6 @@ namespace RosSharp.RosBridgeClient
         private Dictionary<int, Subscriber> subscribers = new Dictionary<int, Subscriber>();
         private Dictionary<int, ServiceCaller> serviceCallers = new Dictionary<int, ServiceCaller>();
 
-        /*
-        private Dictionary<string, Type> messageObjects = new Dictionary<string, Type>
-        {
-            { "geometry_msgs/Twist", typeof(GeometryTwist) },
-            { "std_msgs/String", typeof(StandardString) },
-            { "sensor_msgs/JointState", typeof(SensorJointStates) },
-            { "geometry_msgs/Vector3", typeof(GeometryVector3) },
-            { "nav_msgs/Odometry", typeof(NavigationOdometry) },
-            { "std_msgs/Header", typeof(StandardHeader) },
-            { "geometry_msgs/PoseWithCovariance", typeof(GeometryPoseWithCovariance)},
-            { "geometry_msgs/TwistWithCovariance", typeof(GeometryTwistWithCovariance)},
-            { "geometry_msgs/Pose", typeof(GeometryPose)},
-            { "geometry_msgs/Point", typeof(GeometryPoint)},
-            { "geometry_msgs/Quaternion", typeof(GeometryQuaternion) },
-            { "sensor_msgs/PointCloud2", typeof(SensorPointCloud2) },
-            { "sensor_msgs/PointField" , typeof(SensorPointField)},
-            { "sensor_msgs/Image", typeof(SensorImage) },
-            { "sensor_msgs/CompressedImage",typeof(SensorCompressedImage)},
-            {"nav_msgs/MapMetaData", typeof(NavigationMapMetaData) },
-            {"nav_msgs/OccupancyGrid", typeof(NavigationOccupancyGrid) },
-        };
-        */
         private void recievedOperation(object sender, MessageEventArgs e)
         {
             JObject operation = Deserialize(e.RawData);
@@ -194,7 +187,7 @@ namespace RosSharp.RosBridgeClient
                 serviceCaller = serviceCallers.Values.FirstOrDefault(x => x.service.Equals(serviceResponse.GetService()));
 
 
-            JObject jObject = (JObject)serviceResponse.GetValues();
+            JObject jObject = serviceResponse.GetValues();
             Type type = serviceCaller.objectType;
             if (type != null)
                 serviceCaller.serviceHandler?.Invoke(jObject.ToObject(type));
@@ -205,14 +198,13 @@ namespace RosSharp.RosBridgeClient
         private void recievedPublish(JObject publication, byte[] rawData)
         {
             Subscriber subscriber;
+
             bool foundById = subscribers.TryGetValue(publication.GetServiceId(), out subscriber);
-            /*
+
             if (!foundById)
                 subscriber = subscribers.Values.FirstOrDefault(x => x.topic.Equals(publication.GetTopic()));
 
-            JObject message = (JObject)publication.GetMessage();
-            subscriber.messageHandler?.Invoke((Message)publication.GetMessage().ToObject(messageObjects[subscriber.type]));
-            */
+            subscriber.messageHandler?.Invoke((Message)publication.GetMessage().ToObject(subscriber.messageType));
         }
 
         private void sendOperation(Operation operation)
