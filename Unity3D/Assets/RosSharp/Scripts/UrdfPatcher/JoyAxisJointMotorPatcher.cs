@@ -20,7 +20,7 @@ using UnityEngine;
 namespace RosSharp
 {
 
-    public class JointMotorPatcher : MonoBehaviour
+    public class JoyAxisJointMotorWriterPatcher : MonoBehaviour
     {
         public GameObject UrdfModel;
         public float MotorForce;
@@ -36,10 +36,10 @@ namespace RosSharp
         }
         private void patch(GameObject _gameObject)
         {
-            JointMotorManager jointMotorManager = _gameObject.GetComponent<JointMotorManager>();
+            JoyAxisJointMotorWriterPatcher jointMotorManager = _gameObject.GetComponent<JoyAxisJointMotorWriterPatcher>();
             if (jointMotorManager != null)
                 DestroyImmediate(jointMotorManager);
-            jointMotorManager = _gameObject.AddComponent<JointMotorManager>();
+            jointMotorManager = _gameObject.AddComponent<JoyAxisJointMotorWriterPatcher>();
             jointMotorManager.MaxVelocity = MaxVelocity;
 
             HingeJoint hingeJoint = _gameObject.GetComponent<HingeJoint>();

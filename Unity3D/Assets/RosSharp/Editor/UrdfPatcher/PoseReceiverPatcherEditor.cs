@@ -14,28 +14,22 @@ limitations under the License.
 */
 
 using UnityEngine;
+using UnityEditor;
 
 namespace RosSharp.RosBridgeClient
 {
-    [RequireComponent(typeof(RosConnector))]
-    public class ImageSubscriber : MonoBehaviour
+    [CustomEditor(typeof(PoseReceiverPatcher))]
+    public class PoseReceiverPatcherEditor : Editor
     {
-        public ImageWriter imageWriter;
-        public string Topic = "/image_raw";
-        public float Timestep;
-        private RosSocket rosSocket;
-        private int timestep
-        { get { return (int)(Mathf.Round(Timestep * 1000)); } }
+        private PoseReceiverPatcher poseReceiverPatcher;
 
-        private void Start()
+        public override void OnInspectorGUI()
         {
-            rosSocket = GetComponent<RosConnector>().RosSocket;
-            rosSocket.Subscribe(Topic, "sensor_msgs/CompressedImage", Receive, timestep);
-        }
+            poseReceiverPatcher = (PoseReceiverPatcher)target;
+            DrawDefaultInspector();
 
-        private void Receive(Message message)
-        {            
-            imageWriter.Write(((SensorCompressedImage)message).data);
+            if (GUILayout.Button("Add PoseWriter to URDF Model"))
+                poseReceiverPatcher.Patch();
         }
     }
 }

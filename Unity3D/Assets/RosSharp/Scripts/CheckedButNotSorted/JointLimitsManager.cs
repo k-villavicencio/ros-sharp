@@ -40,7 +40,6 @@ namespace RosSharp
         public float AngleLimitMax { get; private set; }
 
         private HingeJoint _hingeJoint;
-        private Vector3 RotationAxis;
 
         private void Awake()
         {

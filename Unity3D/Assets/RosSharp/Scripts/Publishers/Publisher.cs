@@ -14,11 +14,11 @@ limitations under the License.
 */
 
 using System;
-using System.Threading;
 using UnityEngine;
 
 namespace RosSharp.RosBridgeClient
 {
+    [RequireComponent(typeof(RosConnector))]
     public abstract class Publisher : MonoBehaviour
     {
         public string Topic;
@@ -39,11 +39,11 @@ namespace RosSharp.RosBridgeClient
 
         protected void ReadMessage(object sender, EventArgs e)
         {
-            MessageProvider.RequestMessage(e);
+            MessageProvider.RaiseMessageRequest(e);
             MessageProvider.MessageRealease += Publish;
         }
 
-        protected void Publish(object sender, MessageReleaseEventArgs e)
+        protected void Publish(object sender, MessageEventArgs e)
         {
             MessageProvider.MessageRealease -= Publish;
             rosSocket.Publish(publicationId, e.Message);

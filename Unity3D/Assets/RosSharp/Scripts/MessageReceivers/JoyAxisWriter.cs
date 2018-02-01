@@ -1,6 +1,7 @@
 ﻿/*
-© Siemens AG, 2017
+© Siemens AG, 2017-2018
 Author: Dr. Martin Bischoff (martin.bischoff@siemens.com)
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -14,21 +15,10 @@ limitations under the License.
 
 using UnityEngine;
 
-[RequireComponent(typeof(JointTransformManager))]
-public class AxisInput : MonoBehaviour
+namespace RosSharp.RosBridgeClient
 {
-    public float axisInput;
-    public string AxisName;
-    private JointTransformManager jointTransformManager;
-
-    private void Start()
+    public abstract class JoyAxisWriter : MonoBehaviour
     {
-        jointTransformManager = GetComponent<JointTransformManager>();
-    }
-
-    private void Update()
-    {
-        axisInput = Input.GetAxis(AxisName);
-        jointTransformManager.SetAngle(axisInput);
+        public abstract void Write(float value);
     }
 }

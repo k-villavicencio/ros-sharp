@@ -1,13 +1,11 @@
 ﻿/*
-© Siemens AG, 2017
+© Siemens AG, 2017-2018
 Author: Dr. Martin Bischoff (martin.bischoff@siemens.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
 <http://www.apache.org/licenses/LICENSE-2.0>.
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,15 +15,17 @@ limitations under the License.
 
 using UnityEngine;
 
-namespace RosSharp
+namespace RosSharp.RosBridgeClient
 {
     [RequireComponent(typeof(HingeJoint))]
-    public class JointMotorManager : MonoBehaviour
+    public class JoyAxisJointMotorWriter : JoyAxisWriter
     {
-        private HingeJoint _hingeJoint;
-        public string AxisName;
         public float MaxVelocity;
-        public float ControlInputValue;
+
+        private HingeJoint _hingeJoint;
+        private JointMotor jointMotor;
+        private float targetVelocity;
+        private bool isMessageReceived;
 
         private void Start()
         {
@@ -34,17 +34,21 @@ namespace RosSharp
 
         private void Update()
         {
-            UpdateAxisInput();            
-            JointMotor jointMotor = _hingeJoint.motor;
-            jointMotor.targetVelocity = ControlInputValue * MaxVelocity;
+            if (isMessageReceived)
+                ProcessMessage();
+        }
+        private void ProcessMessage()
+        {
+            jointMotor = _hingeJoint.motor;
+            jointMotor.targetVelocity = targetVelocity;
             _hingeJoint.motor = jointMotor;
-            ControlInputValue = 0;
+            isMessageReceived = false;
         }
 
-        private void UpdateAxisInput()
+        public override void Write(float value)
         {
-            if (Input.GetAxis(AxisName) != 0)
-                ControlInputValue = Input.GetAxis(AxisName);
+            targetVelocity = value * MaxVelocity;
+            isMessageReceived = true;
         }
     }
 }

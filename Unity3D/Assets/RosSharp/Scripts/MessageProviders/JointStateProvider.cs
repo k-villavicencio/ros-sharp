@@ -55,11 +55,11 @@ namespace RosSharp.RosBridgeClient
             for (int i = 0; i < JointStateReaders.Length; i++)
                 UpdateJointState(i);
 
-            ReleaseMessage(new MessageReleaseEventArgs(message));
+            RaiseMessageRelease(new MessageEventArgs(message));
         }
         private void UpdateJointState(int i)
         {
-            JointStateReaders[i].GetJointState(
+            JointStateReaders[i].Read(
                 out message.name[i],
                 out message.position[i],
                 out message.velocity[i],

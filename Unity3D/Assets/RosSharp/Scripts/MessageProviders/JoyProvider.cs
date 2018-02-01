@@ -55,12 +55,12 @@ namespace RosSharp.RosBridgeClient
             message.header.Update();
 
             for (int i = 0; i < JoyAxisReaders.Length; i++)
-                message.axes[i] = JoyAxisReaders[i].GetValue();
+                message.axes[i] = JoyAxisReaders[i].Read();
             
-            for (int i = 0; i < JoyAxisReaders.Length; i++)
-                message.buttons[i] = (JoyButtonReaders[i].GetValue() ? 1 : 0);
+            for (int i = 0; i < JoyButtonReaders.Length; i++)
+                message.buttons[i] = (JoyButtonReaders[i].Read() ? 1 : 0);
 
-            ReleaseMessage(new MessageReleaseEventArgs(message));
+            RaiseMessageRelease(new MessageEventArgs(message));
         }
     }
 }

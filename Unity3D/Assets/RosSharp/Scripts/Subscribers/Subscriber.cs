@@ -17,26 +17,28 @@ using UnityEngine;
 
 namespace RosSharp.RosBridgeClient
 {
-    [RequireComponent(typeof(RosSocket))]
-    public class JointStateSubscriber : MonoBehaviour
+    [RequireComponent(typeof(RosConnector))]
+    public class Subscriber : MonoBehaviour
     {
-        public string Topic = "/joint_states";
-        public JointStateWriter[] JointStateWriters;
+        public string Topic;
 
-        private RosSocket rosSocket;
+        public float TimeStep;
+        private int timeStep{ get { return (int)(TimeStep * 1000); } } // the rate(in ms in between messages) at which to throttle the topics
 
-        public void Start()
+        public MessageReceiver MessageReceiver;
+
+        protected RosSocket rosSocket;
+        protected int publicationId;
+
+        private void Start()
         {
             rosSocket = GetComponent<RosConnector>().RosSocket;
-            rosSocket.Subscribe(Topic, "sensor_msgs/JointState", Receive);
+            rosSocket.Subscribe(Topic, MessageTypes.RosMessageType(MessageReceiver.MessageType), Receive, timeStep);
         }
-
+               
         private void Receive(Message message)
-        {
-            SensorJointStates sensorJointStates = (SensorJointStates)message;
-            // https://answers.unity.com/questions/407040/how-to-get-a-joints-current-positionangle.html
-            for (int i = 0; i < JointStateWriters.Length; i++)
-                JointStateWriters[i].Write(sensorJointStates.position[i]);
+        {            
+            MessageReceiver.RaiseMessageReception(new MessageEventArgs(message));
         }
     }
 }

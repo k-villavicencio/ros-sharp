@@ -12,36 +12,31 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+using System;
 using UnityEngine;
 
 namespace RosSharp.RosBridgeClient
 {
-    public class PoseWriter : MonoBehaviour
+    public class JointStateReceiver : MessageReceiver
     {
-        public PoseSubscriber poseSubscriber;
-        private Vector3 position;
-        private Quaternion rotation;
+        public override Type MessageType { get { return (typeof(SensorJointStates)); } }
 
-        private bool doUpdate;
+        public JointStateWriter[] JointStateWriters;
 
-        private void Update()
+        private SensorJointStates message;
+
+        private void Awake()
         {
-            if (doUpdate)
-            {
-                WriteUpdate();
-                doUpdate = false;
-            }
+            MessageReception += ReceiveMessage;
         }
 
-        private void WriteUpdate()
+        private void ReceiveMessage(object sender, MessageEventArgs e)
         {
-            transform.position = position;
-            transform.rotation = rotation;
-        }
-        public void Write(Vector3 _position, Quaternion _rotation)
-        {
-            position = _position.Ros2Unity();
-            rotation = _rotation.Ros2Unity();
+            message = (SensorJointStates)e.Message;
+            for (int i = 0; i < JointStateWriters.Length; i++)
+                JointStateWriters[i].Write(message.position[i]);   
         }
     }
 }
+

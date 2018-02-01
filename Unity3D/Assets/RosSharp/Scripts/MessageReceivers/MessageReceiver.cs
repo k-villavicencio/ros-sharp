@@ -13,17 +13,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+using System;
 using UnityEngine;
 
 namespace RosSharp.RosBridgeClient
 {
-    public class JoyButtonReader : MonoBehaviour
+    public abstract class MessageReceiver : MonoBehaviour
     {
-        public string Name;
-        
-        public bool Read()
+        public abstract Type MessageType { get; }
+        public event EventHandler<MessageEventArgs> MessageReception;
+
+        public virtual void RaiseMessageReception(MessageEventArgs e)
         {
-            return Input.GetButton(Name);              
+            EventHandler<MessageEventArgs> eventHandler = MessageReception;
+            if (eventHandler != null)
+                eventHandler(this, e);
         }
     }
 }

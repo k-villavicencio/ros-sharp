@@ -13,46 +13,48 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+using System;
 using UnityEngine;
 
 namespace RosSharp.RosBridgeClient
 {
     [RequireComponent(typeof(MeshRenderer))]
-    public class ImageWriter : MonoBehaviour
+    public class ImageReceiver : MessageReceiver
     {
-        private byte[] ImageData;
+        public override Type MessageType { get { return (typeof(SensorCompressedImage)); } }
+
+        private byte[] imageData;
+        private bool isMessageReceived;
 
         private MeshRenderer meshRenderer;
         private Texture2D texture2D;
 
-        private bool doUpdate;
-
+        private void Awake()
+        {
+            MessageReception += ReceiveMessage;
+        }
         private void Start()
         {
-            texture2D = new Texture2D(1, 1);
+            texture2D = new Texture2D(1,1);
             meshRenderer = GetComponent<MeshRenderer>();
         }
-
         private void Update()
         {
-            if (doUpdate)
-            {
-                //Debug.Log(Time.realtimeSinceStartup);
-                WriteUpdate();
-                doUpdate = false;
-            }
+            if (isMessageReceived)
+                ProcessMessage();
         }
-        private void WriteUpdate()
+        private void ReceiveMessage(object sender, MessageEventArgs e)
         {
-            texture2D.LoadImage(ImageData);
-            texture2D.Apply();
-            meshRenderer.material.SetTexture("_MainTex", texture2D);
+            imageData = ((SensorCompressedImage)e.Message).data;
+            isMessageReceived = true;
         }
 
-        public void Write(byte[] imageData)
-        {            
-            ImageData = imageData;
-            doUpdate = true;
+        private void ProcessMessage()
+        {
+            texture2D.LoadImage(imageData);
+            texture2D.Apply();
+            meshRenderer.material.SetTexture("_MainTex", texture2D);
+            isMessageReceived = false;
         }
     }
 }

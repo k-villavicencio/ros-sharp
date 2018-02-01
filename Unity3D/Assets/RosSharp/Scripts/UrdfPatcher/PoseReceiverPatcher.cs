@@ -14,16 +14,21 @@ limitations under the License.
 */
 
 using UnityEngine;
-
 namespace RosSharp.RosBridgeClient
 {
-    public class JoyButtonReader : MonoBehaviour
+    [RequireComponent(typeof(PoseReceiver))]
+    public class PoseReceiverPatcher : MonoBehaviour
     {
-        public string Name;
-        
-        public bool Read()
+        public GameObject UrdfModel;
+
+        public void Patch()
         {
-            return Input.GetButton(Name);              
+            UrdfModel.transform.DestroyImmediateIfExists<PoseReceiver>();
+
+            PoseReceiver poseWriter = UrdfModel.AddComponent<PoseReceiver>();
+
+            Subscriber subscriber = GetComponent<Subscriber>();
+            subscriber.MessageReceiver = poseWriter;
         }
     }
 }

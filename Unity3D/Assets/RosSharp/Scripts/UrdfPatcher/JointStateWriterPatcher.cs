@@ -18,15 +18,14 @@ using UnityEngine;
 
 namespace RosSharp.RosBridgeClient
 {
-    [RequireComponent(typeof(JointStateSubscriber))]
+    [RequireComponent(typeof(JointStateReceiver))]
     public class JointStateWriterPatcher : MonoBehaviour
     {
-        public GameObject UrdfModel;
-        
+        public GameObject UrdfModel;        
 
         public void Patch()
         {
-            JointStateSubscriber jointStateSubscriber = GetComponent<JointStateSubscriber>();
+            JointStateReceiver jointStateReceiver = GetComponent<JointStateReceiver>();
 
             JointStateWriter jointStateWriter;
             JointStateWriter.JointTypes jointType;
@@ -42,11 +41,12 @@ namespace RosSharp.RosBridgeClient
                     jointStateWriter = child.gameObject.AddComponent<JointStateWriter>();
                     jointStateWriter.JointType = jointType;
                     jointStateWriter.JointId = jointID++;
+
                     jointStateWriters.Add(jointStateWriter);
                     Debug.Log("JointStateWriter of Type " + jointType.ToString() + " with ID: " + jointStateWriter.JointId + "\nadded to GameObject \"" + child.name + "\".");
                 }
             }
-            jointStateSubscriber.JointStateWriters = jointStateWriters.ToArray();
+            jointStateReceiver.JointStateWriters = jointStateWriters.ToArray();
         }
 
         private bool isPatchable(Transform child, out JointStateWriter.JointTypes jointType)

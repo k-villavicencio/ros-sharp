@@ -65,7 +65,7 @@ namespace RosSharp.RosBridgeClient
         {
             message.header.Update();
             message.data = ReadTexture2D().EncodeToJPG(qualityLevel);
-            ReleaseMessage(new MessageReleaseEventArgs(message));
+            RaiseMessageRelease(new MessageEventArgs(message));
         }
         private Texture2D ReadTexture2D()
         {

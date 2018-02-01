@@ -14,21 +14,18 @@ limitations under the License.
 */
 
 using UnityEngine;
+
 namespace RosSharp.RosBridgeClient
 {
-    [RequireComponent(typeof(PoseSubscriber))]
-    public class PoseWriterPatcher : MonoBehaviour
+    [RequireComponent(typeof(JoyAxisWriter))]
+    public class AxisInput : MonoBehaviour
     {
-        public GameObject UrdfModel;
+        public string AxisName;
+        public JoyAxisWriter joyAxisWriter;
 
-        public void Patch()
+        private void OnMouseXXX()
         {
-            UrdfModel.transform.DestroyImmediateIfExists<PoseWriter>();
-
-            PoseWriter poseWriter = UrdfModel.AddComponent<PoseWriter>();
-
-            PoseSubscriber poseSubscriber = GetComponent<PoseSubscriber>();
-            poseSubscriber.poseWriter = poseWriter;
+            joyAxisWriter.Write(Input.GetAxis(AxisName));
         }
     }
 }

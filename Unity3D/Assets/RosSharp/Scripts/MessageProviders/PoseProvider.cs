@@ -46,7 +46,7 @@ namespace RosSharp.RosBridgeClient
             message.header.Update();
             message.pose.position = GetGeometryPoint(transform.position.Unity2Ros());
             message.pose.orientation = GetGeometryQuaternion(transform.rotation.Unity2Ros());
-            ReleaseMessage(new MessageReleaseEventArgs(message));
+            RaiseMessageRelease(new MessageEventArgs(message));
         }
 
         private GeometryPoint GetGeometryPoint(Vector3 position)

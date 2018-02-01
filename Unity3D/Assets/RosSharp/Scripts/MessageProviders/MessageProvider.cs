@@ -22,7 +22,7 @@ namespace RosSharp.RosBridgeClient
     {       
         public abstract Type MessageType { get; }
         public event EventHandler MessageRequest;
-        public event EventHandler<MessageReleaseEventArgs> MessageRealease;
+        public event EventHandler<MessageEventArgs> MessageRealease;
 
         protected bool IsMessageRequested { get { return isMessageRequested; } }
         private bool isMessageRequested;
@@ -32,7 +32,7 @@ namespace RosSharp.RosBridgeClient
             MessageRequest += OnMessageRequest;
             MessageRealease += OnMessageRelease;
         }
-        private void OnMessageRelease(object sender, MessageReleaseEventArgs e)
+        private void OnMessageRelease(object sender, MessageEventArgs e)
         {
             isMessageRequested = false;
         }
@@ -41,27 +41,18 @@ namespace RosSharp.RosBridgeClient
             isMessageRequested = true;
         }
         
-        protected virtual void ReleaseMessage(MessageReleaseEventArgs e)
+        protected virtual void RaiseMessageRelease(MessageEventArgs e)
         {
-            EventHandler<MessageReleaseEventArgs> eventHandler = MessageRealease;
+            EventHandler<MessageEventArgs> eventHandler = MessageRealease;
             if (eventHandler != null)
                 eventHandler(this, e);
         }
 
-        public virtual void RequestMessage(EventArgs e)
+        public virtual void RaiseMessageRequest(EventArgs e)
         {
             EventHandler eventHandler = MessageRequest;
             if (eventHandler != null)
                 eventHandler(this, e);
-        }
-    }
-
-    public class MessageReleaseEventArgs : EventArgs
-    {        
-        public Message Message;
-        public MessageReleaseEventArgs(Message message)
-        {
-            Message = message;
         }
     }
 }

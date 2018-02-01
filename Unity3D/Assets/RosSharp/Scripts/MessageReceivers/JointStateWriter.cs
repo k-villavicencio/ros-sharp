@@ -13,7 +13,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-
 using UnityEngine;
 
 namespace RosSharp.RosBridgeClient
@@ -24,12 +23,12 @@ namespace RosSharp.RosBridgeClient
         public int JointId;
         public enum JointTypes { continuous, revolute, prismatic };
         public JointTypes JointType;
-
+  
         private Joint joint;
         
         private float newState; // deg or m
         private float prevState; // deg or m
-        private bool doUpdate;
+        private bool isNewStateReceived;
 
         private void Start()
         {
@@ -38,29 +37,38 @@ namespace RosSharp.RosBridgeClient
 
         private void Update()
         {
-            if (doUpdate)
+            if (isNewStateReceived)
             {
                 WriteUpdate();
-                doUpdate = false;
+                isNewStateReceived = false;
             }
         }
         private void WriteUpdate()
         {
+            if (JointType == JointTypes.continuous || JointType == JointTypes.revolute)
+                WriteHingeJointUpdate();
+            else if (JointType == JointTypes.prismatic)
+                WritePrismaticJointUpdate();
+            
+        prevState = newState;
+        }
+
+        private void WriteHingeJointUpdate()
+        {
             Vector3 anchor = transform.TransformPoint(joint.anchor);
             Vector3 axis = transform.TransformDirection(joint.axis);
-
-            if (JointType == JointTypes.continuous || JointType == JointTypes.revolute)
-                transform.RotateAround(anchor, axis, (prevState - newState) * Mathf.Rad2Deg);
-            else if (JointType == JointTypes.prismatic)
-                transform.Translate(axis * (prevState - newState));
-
-            prevState = newState;
+            transform.RotateAround(anchor, axis, (prevState - newState) * Mathf.Rad2Deg);
+        }
+        private void WritePrismaticJointUpdate()
+        {
+            Vector3 axis = transform.TransformDirection(joint.axis);
+            transform.Translate(axis * (prevState - newState));
         }
 
         public void Write(float state)
         {
-            newState = state ;
-            doUpdate = true;
+            newState = state;
+            isNewStateReceived = true;
         }
     }
 }

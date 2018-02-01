@@ -14,22 +14,11 @@ limitations under the License.
 */
 
 using UnityEngine;
-using UnityEditor;
 
 namespace RosSharp.RosBridgeClient
 {
-    [CustomEditor(typeof(PoseWriterPatcher))]
-    public class PoseWriterPatcherEditor : Editor
+    public abstract class JoyButtonWriter : MonoBehaviour
     {
-        private PoseWriterPatcher poseWriterPatcher;
-
-        public override void OnInspectorGUI()
-        {
-            poseWriterPatcher = (PoseWriterPatcher)target;
-            DrawDefaultInspector();
-
-            if (GUILayout.Button("Add PoseWriter to URDF Model"))
-                poseWriterPatcher.Patch();
-        }
+        public abstract void Write(int value);
     }
 }

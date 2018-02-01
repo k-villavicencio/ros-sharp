@@ -20,17 +20,17 @@ using UnityEditor;
 
 namespace RosSharp
 {
-    [CustomEditor(typeof(JointMotorPatcher))]
-    public class JointMotorPatcherEditor : Editor
+    [CustomEditor(typeof(JoyAxisJointMotorWriterPatcher))]
+    public class JoyAxisJointMotorWriterPatcherEditor : Editor
     {
-        private JointMotorPatcher jointMotorPatcher;
+        private JoyAxisJointMotorWriterPatcher jointMotorPatcher;
 
         public override void OnInspectorGUI()
         {
-            jointMotorPatcher = (JointMotorPatcher)target;
+            jointMotorPatcher = (JoyAxisJointMotorWriterPatcher)target;
             DrawDefaultInspector();
 
-            if (GUILayout.Button("Apply JointMotorManagers"))
+            if (GUILayout.Button("Apply JoyAxisJointMotorWriter"))
                 jointMotorPatcher.patch();
 
             Application.runInBackground = true;

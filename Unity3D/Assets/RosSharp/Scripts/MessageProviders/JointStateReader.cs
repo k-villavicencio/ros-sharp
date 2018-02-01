@@ -34,7 +34,7 @@ namespace RosSharp.RosBridgeClient
                 joint = new PrismaticJoint(GetComponent<ConfigurableJoint>());
         }
         
-        public void GetJointState(out string name, out float position, out float velocity, out float effort)
+        public void Read(out string name, out float position, out float velocity, out float effort)
         {
             name = gameObject.name;
             position = joint.GetPosition();
