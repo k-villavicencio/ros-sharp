@@ -1,0 +1,12 @@
+F:\GitRepositories\GitHub Fork\ros-sharp\RosBridgeClientTest\bin\Release\RosBridgeClientTest.exe.config
+F:\GitRepositories\GitHub Fork\ros-sharp\RosBridgeClientTest\bin\Release\RosBridgeClientTest.exe
+F:\GitRepositories\GitHub Fork\ros-sharp\RosBridgeClientTest\bin\Release\RosBridgeClientTest.pdb
+F:\GitRepositories\GitHub Fork\ros-sharp\RosBridgeClientTest\bin\Release\RosBridgeClient.dll
+F:\GitRepositories\GitHub Fork\ros-sharp\RosBridgeClientTest\bin\Release\Newtonsoft.Json.dll
+F:\GitRepositories\GitHub Fork\ros-sharp\RosBridgeClientTest\bin\Release\websocket-sharp.dll
+F:\GitRepositories\GitHub Fork\ros-sharp\RosBridgeClientTest\bin\Release\RosBridgeClient.pdb
+F:\GitRepositories\GitHub Fork\ros-sharp\RosBridgeClientTest\bin\Release\Newtonsoft.Json.xml
+F:\GitRepositories\GitHub Fork\ros-sharp\RosBridgeClientTest\bin\Release\websocket-sharp.xml
+F:\GitRepositories\GitHub Fork\ros-sharp\RosBridgeClientTest\obj\Release\RosBridgeClientTest.csprojResolveAssemblyReference.cache
+F:\GitRepositories\GitHub Fork\ros-sharp\RosBridgeClientTest\obj\Release\RosBridgeClientTest.exe
+F:\GitRepositories\GitHub Fork\ros-sharp\RosBridgeClientTest\obj\Release\RosBridgeClientTest.pdb
