@@ -18,12 +18,8 @@ using UnityEngine;
 namespace RosSharp.RosBridgeClient
 {
     [RequireComponent(typeof(Joint))]
-    public class JointStateWriter : MonoBehaviour
+    public class JointStateWriter : JointStateHandler
     {
-        public int JointId;
-        public enum JointTypes { continuous, revolute, prismatic };
-        public JointTypes JointType;
-  
         private Joint joint;
         
         private float newState; // deg or m

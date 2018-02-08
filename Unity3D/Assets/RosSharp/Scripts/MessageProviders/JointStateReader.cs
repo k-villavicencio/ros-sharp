@@ -18,12 +18,8 @@ using UnityEngine;
 namespace RosSharp.RosBridgeClient
 {
     [RequireComponent(typeof(Joint))]
-    public class JointStateReader : MonoBehaviour
+    public class JointStateReader : JointStateHandler
     {
-        public int JointId;
-        public enum JointTypes { continuous, revolute, prismatic };
-        public JointTypes JointType;
-
         private IUrdfJoint joint;
                 
         private void Start()
