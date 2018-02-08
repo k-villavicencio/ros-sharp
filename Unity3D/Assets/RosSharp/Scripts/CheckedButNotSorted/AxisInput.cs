@@ -21,8 +21,12 @@ namespace RosSharp.RosBridgeClient
     public class AxisInput : MonoBehaviour
     {
         public string AxisName;
-        public JoyAxisWriter joyAxisWriter;
+        private JoyAxisWriter joyAxisWriter;
 
+        private void Start()
+        {
+            joyAxisWriter = GetComponent<JoyAxisWriter>();
+        }
         private void OnMouseXXX()
         {
             joyAxisWriter.Write(Input.GetAxis(AxisName));
