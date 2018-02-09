@@ -21,37 +21,30 @@ namespace RosSharp.RosBridgeClient
 
     public class JoyReceiver : MessageReceiver
     {
-        public JoyButtonWriter[] joyButtonWriters;
-        public JoyAxisWriter[] joyAxesWriters;
         public override Type MessageType { get { return (typeof(SensorJoy)); } }
-
         private SensorJoy message;
-        private int joyButtonWritersLength;
-        private int joyAxesWritersLength;
+
+        public JoyButtonWriter[] joyButtonWriters;
+        public JoyAxisWriter[] joyAxisWriters;
+
         private void Awake()
         {
             MessageReception += ReceiveMessage;
         }
 
-        private void Start()
-        {
-            joyButtonWritersLength = joyButtonWriters.Length;
-            joyAxesWritersLength = joyAxesWriters.Length;
-        }
-
         private void ReceiveMessage(object sender, MessageEventArgs e)
         {            
             message = (SensorJoy)e.Message;
-            int arrayLength = message.buttons.Length;            
-            int I = (joyButtonWritersLength < arrayLength ? joyButtonWritersLength : arrayLength);
+
+            int I = joyButtonWriters.Length < message.buttons.Length ? joyButtonWriters.Length : message.buttons.Length;
             for (int i = 0; i < I; i++)
-                if (joyButtonWriters!=null)
+                if (joyButtonWriters[i]!=null)
                 joyButtonWriters[i].Write(message.buttons[i]);
 
-            arrayLength = message.buttons.Length;
-            I = (joyAxesWritersLength < arrayLength ? joyAxesWritersLength : arrayLength);
+            I = joyAxisWriters.Length < message.buttons.Length ? joyAxisWriters.Length : message.buttons.Length;
             for (int i = 0; i < I; i++)
-                joyAxesWriters[i].Write(message.axes[i]);
+                if (joyAxisWriters[i] != null)
+                    joyAxisWriters[i].Write(message.axes[i]);
         }
     }
 }
