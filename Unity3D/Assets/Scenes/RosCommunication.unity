@@ -2546,7 +2546,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 4d03b69521199b54cad507729aa2ff36, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2869,7 +2869,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dac3c20e7ea0a014e9aa6b6ceb321e57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UrdfModel: {fileID: 1505340174}
 --- !u!114 &166353167
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18035,7 +18034,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16e46efca78dea94fae692fbc3e1d54e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AxisName: 
 --- !u!114 &1031622053
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19554,7 +19552,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6f1ce947c0cb4f4bb18edcbdf835eb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UrdfModel: {fileID: 1505340174}
 --- !u!114 &1130767577
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22546,9 +22543,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   joyButtonWriters: []
-  joyAxesWriters:
-  - {fileID: 1031622053}
-  - {fileID: 456610956}
+  joyAxisWriters: []
 --- !u!1 &1291150581
 GameObject:
   m_ObjectHideFlags: 0
@@ -34199,7 +34194,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f9b8f32224ca04498ffd0a2e2bc0567, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RosBridgeServerUrl: ws://192.168.0.104:9090
+  RosBridgeServerUrl: ws://192.168.0.101:9090
 --- !u!4 &1925793109
 Transform:
   m_ObjectHideFlags: 0

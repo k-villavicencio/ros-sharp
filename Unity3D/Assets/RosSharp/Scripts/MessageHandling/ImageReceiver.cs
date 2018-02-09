@@ -37,6 +37,7 @@ namespace RosSharp.RosBridgeClient
         {
             texture2D = new Texture2D(1,1);
             meshRenderer = GetComponent<MeshRenderer>();
+            meshRenderer.material = new Material(Shader.Find("Standard"));
         }
         private void Update()
         {
